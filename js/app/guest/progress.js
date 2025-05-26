@@ -1,4 +1,5 @@
 export const progress = (() => {
+
     /**
      * @type {HTMLElement|null}
      */
@@ -14,14 +15,13 @@ export const progress = (() => {
     let valid = true;
 
     /**
-     * Tidak menambah jumlah resource yang dimuat.
+     * @returns {void}
      */
     const add = () => {
-        // Kosongkan agar tidak menghitung resource
+        total += 1;
     };
 
     /**
-     * Menampilkan progress informasi (jika dibutuhkan).
      * @returns {string}
      */
     const showInformation = () => {
@@ -29,42 +29,40 @@ export const progress = (() => {
     };
 
     /**
-     * Menyelesaikan progress tanpa menampilkan bar.
      * @param {string} type
+     * @returns {void}
      */
     const complete = (type) => {
-        if (!valid) return;
+        if (!valid) {
+            return;
+        }
 
         loaded += 1;
+        info.innerText = `Loading ${type} complete ${showInformation()}`;
+        bar.style.width = Math.min((loaded / total) * 100, 100).toString() + '%';
 
-        // Jangan tampilkan informasi atau bar
         if (loaded === total) {
             document.dispatchEvent(new Event('progress.done'));
         }
     };
 
     /**
-     * Menandai jika ada error pada loading.
      * @param {string} type
+     * @returns {void}
      */
     const invalid = (type) => {
         valid = false;
-        // Tidak perlu tampilkan error visual
+        bar.style.backgroundColor = 'red';
+        info.innerText = `Error loading ${type} ${showInformation()}`;
     };
 
     /**
-     * Inisialisasi tanpa menampilkan apapun.
+     * @returns {void}
      */
     const init = () => {
         info = document.getElementById('progress-info');
         bar = document.getElementById('progress-bar');
-
-        // Sembunyikan elemen jika ada
-        if (info) info.style.display = 'none';
-        if (bar) bar.style.display = 'none';
-
-        // Langsung trigger event selesai
-        document.dispatchEvent(new Event('progress.done'));
+        info.style.display = 'block';
     };
 
     return {
